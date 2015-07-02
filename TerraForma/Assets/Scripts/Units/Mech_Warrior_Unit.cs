@@ -19,12 +19,18 @@ public class Mech_Warrior_Unit : Unit {
     {
         _name = "Warrior";
         _element = Element.Mech;
-        _move = 2;
-        _attack = 2.0f;
-        _defense = 2.0f;
-        _range = 1;
-        _health = 100.0f;
-        _possibleMove = _move;
+
+        stats.Health = 100.0f;
+        stats.Mana = 100.0f;
+        stats.Move = 2;
+        stats.Attack = 2.0f;
+        stats.PhysicalDefense = 2.0f;
+        stats.MagicDefense = 2.0f;
+        stats.Range = 1;
+
+        _health = stats.Health;
+        _mana = stats.Mana;
+        _possibleMove = stats.Move;
     }
 
     protected override void SetPowers()

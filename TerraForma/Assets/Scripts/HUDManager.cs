@@ -59,7 +59,7 @@ public class HUDManager : MonoBehaviour {
         string h = "Health: " + u.Health;
         u_health.text = h;
         u_att.text = "Att: " + u.Attack.ToString();
-        u_def.text = "Def: " + u.Defense.ToString();
+        u_def.text = "Def: " + u.PhysicalDefense.ToString();
         u_speed.text = "Speed: " + u.Move.ToString();
     }
 

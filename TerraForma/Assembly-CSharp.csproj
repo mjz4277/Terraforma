@@ -93,7 +93,9 @@
      <Compile Include="Assets\Scripts\Units\Light_Knight_Unit.cs" />
      <Compile Include="Assets\Scripts\Units\Mech_Warrior_Unit.cs" />
      <Compile Include="Assets\Scripts\Units\Nature_Axeman_Unit.cs" />
+     <Compile Include="Assets\Scripts\Units\SEManager.cs" />
      <Compile Include="Assets\Scripts\Units\Unit.cs" />
+     <Compile Include="Assets\Scripts\Units\UnitStats.cs" />
      <Compile Include="Assets\Scripts\Units\Water_Spearman_Unit.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />

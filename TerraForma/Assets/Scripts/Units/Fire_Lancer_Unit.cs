@@ -19,12 +19,18 @@ public class Fire_Lancer_Unit : Unit {
     {
         _name = "Lancer";
         _element = Element.Fire;
-        _move = 2;
-        _attack = 3.0f;
-        _defense = 1.0f;
-        _range = 2;
-        _health = 100.0f;
-        _possibleMove = _move;
+
+        stats.Health = 100.0f;
+        stats.Mana = 100.0f;
+        stats.Move = 2;
+        stats.Attack = 3.0f;
+        stats.PhysicalDefense = 1.0f;
+        stats.MagicDefense = 1.0f;
+        stats.Range = 2;
+
+        _health = stats.Health;
+        _mana = stats.Mana;
+        _possibleMove = stats.Move;
     }
 
     protected override void SetPowers()

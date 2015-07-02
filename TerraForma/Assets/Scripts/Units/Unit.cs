@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public abstract class Unit : MonoBehaviour {
+public abstract class Unit : MonoBehaviour
+{
 
     protected MeshRenderer meshRenderer;
 
@@ -15,14 +16,10 @@ public abstract class Unit : MonoBehaviour {
 
     protected string _name;
     protected Element _element;
-    protected int _move;
-    protected float _attack;
-    protected float _defense;
-    protected int _range;
-    protected float _maxHealth;
     protected float _health;
-    protected float _maxMana;
     protected float _mana;
+
+    protected UnitStats stats;
 
     protected Power[] powers = new Power[4];
 
@@ -38,10 +35,7 @@ public abstract class Unit : MonoBehaviour {
     protected Tile _currentTile;
     protected int _possibleMove;
 
-    protected List<StatusEffect> movementEffects = new List<StatusEffect>();
-    protected List<StatusEffect> attackEffects = new List<StatusEffect>();
-    protected List<StatusEffect> buffEffects = new List<StatusEffect>();
-    protected List<StatusEffect> debuffEffects = new List<StatusEffect>();
+    protected SEManager m_statusEffects;
 
     public string Name
     {
@@ -54,44 +48,49 @@ public abstract class Unit : MonoBehaviour {
     }
     public int Move
     {
-        get { return _move; }
+        get { return stats.Move; }
     }
 
     public float Attack
     {
-        get { return _attack; }
+        get { return stats.Attack; }
     }
 
-    public float Defense
+    public float PhysicalDefense
     {
-        get { return _defense; }
+        get { return stats.PhysicalDefense; }
+    }
+
+    public float MagicDefense
+    {
+        get { return stats.MagicDefense; }
     }
 
     public int Range
     {
-        get { return _range; }
+        get { return stats.Range; }
     }
 
     public float MaxHealth
     {
-        get { return _maxHealth; }
+        get { return stats.Health; }
     }
 
     public float Health
     {
         get { return _health; }
-        set { if (value < 0) _health = 0; else if (value > _maxHealth) _health = _maxHealth; else _health = value; }
+        set { if (value < 0) _health = 0; else if (value > stats.Health) _health = stats.Health; else _health = value; }
     }
 
     public float MaxMana
     {
-        get { return _maxMana; }
+        get { return stats.Mana; }
     }
 
     public float Mana
     {
         get { return _mana; }
-        set { if (value < 0) _mana = 0; else if (value > _maxMana) _mana = _maxMana; else _mana = value; }
+        set { if (value < 0) _mana = 0; else if (value > stats.Mana) _mana = stats.Mana; else _mana = value; }
     }
 
     public Power[] Powers
@@ -132,8 +131,8 @@ public abstract class Unit : MonoBehaviour {
     public bool TurnOver
     {
         get { return _turnOver; }
-        set 
-        { 
+        set
+        {
             _turnOver = value;
             if (_turnOver) meshRenderer.material = mat_ended;
             else meshRenderer.material = mat_default;
@@ -143,8 +142,8 @@ public abstract class Unit : MonoBehaviour {
     public bool Selected
     {
         get { return _selected; }
-        set 
-        { 
+        set
+        {
             _selected = value;
             if (_selected) meshRenderer.material.shader = shader_selected;
             else meshRenderer.material.shader = shader_default;
@@ -153,7 +152,7 @@ public abstract class Unit : MonoBehaviour {
 
     public virtual void ResetUnit()
     {
-        _possibleMove = _move;
+        _possibleMove = stats.Move;
         this.CanAttack = true;
         this.TurnOver = false;
     }
@@ -162,6 +161,8 @@ public abstract class Unit : MonoBehaviour {
     {
         meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
         mat_ended = Resources.Load<Material>("Materials/Unit_Turn_Over");
+        stats = gameObject.GetComponent<UnitStats>();
+        m_statusEffects = gameObject.GetComponent<SEManager>();
         LoadResources();
         SetStats();
         SetPowers();
@@ -170,13 +171,14 @@ public abstract class Unit : MonoBehaviour {
     protected abstract void SetPowers();
 
     public abstract void LoadResources();
+
     protected abstract void SetStats();
 
     public virtual void SnapToCurrent()
     {
         Transform[] trans = _currentTile.gameObject.GetComponentsInChildren<Transform>();
         Transform point = null;
-        for (int i = 0; i < trans.Length; i++ )
+        for (int i = 0; i < trans.Length; i++)
         {
             if (trans[i].name == "p_piece_center")
                 point = trans[i];
@@ -190,24 +192,13 @@ public abstract class Unit : MonoBehaviour {
 
     public void AddStatusEffect(StatusEffect se)
     {
-        if(se is se_Slow || se is se_Immobilize)
-        {
-            movementEffects.Add(se);
-        }
-        if(se is se_Silence || se is se_Disarm)
-        {
-            attackEffects.Add(se);
-        }
-        if(se is se_DOT)
-        {
-            debuffEffects.Add(se);
-        }
+        m_statusEffects.AddStatusEffect(se);
     }
 
     public virtual void AttackUnit(Unit enemy)
     {
-        float attack = (_attack + 1) * 10;
-        float defense = enemy.Defense * 5;
+        float attack = (stats.Attack + 1) * 10;
+        float defense = enemy.PhysicalDefense * 5;
         enemy.TakeDamage(attack - defense);
 
         //Unit's turn ends after attacking
@@ -224,7 +215,7 @@ public abstract class Unit : MonoBehaviour {
     public virtual void TakeDamage(float amount)
     {
         _health -= amount;
-        if(_health <= 0)
+        if (_health <= 0)
         {
             _isDead = true;
         }
@@ -232,15 +223,15 @@ public abstract class Unit : MonoBehaviour {
 
     public void CalculateNextTurnStats()
     {
-        _possibleMove = _move;
-        foreach(StatusEffect se in movementEffects)
+        _possibleMove = stats.Move;
+        foreach (StatusEffect se in m_statusEffects.MovementEffects)
         {
-            if(se is se_Immobilize)
+            if (se is se_Immobilize)
             {
                 _possibleMove = 0;
                 break;
             }
-            if(se is se_Slow)
+            if (se is se_Slow)
             {
                 se_Slow se_slow_cast = (se_Slow)se;
                 _possibleMove -= se_slow_cast.Amount;
@@ -252,17 +243,17 @@ public abstract class Unit : MonoBehaviour {
 
         _canAttack = true;
         _canUsePower = true;
-        foreach(StatusEffect se in attackEffects)
+        foreach (StatusEffect se in m_statusEffects.AttackEffects)
         {
-            if(se is se_Silence)
+            if (se is se_Silence)
             {
                 _canUsePower = false;
             }
-            if(se is se_Disarm)
+            if (se is se_Disarm)
             {
                 _canAttack = false;
             }
-            if(se is se_Stun)
+            if (se is se_Stun)
             {
                 _canAttack = false;
                 _canUsePower = false;
@@ -271,7 +262,7 @@ public abstract class Unit : MonoBehaviour {
             }
         }
 
-        foreach(StatusEffect se in debuffEffects)
+        foreach (StatusEffect se in m_statusEffects.DebuffEffects)
         {
             if (se is se_DOT)
             {
@@ -285,41 +276,7 @@ public abstract class Unit : MonoBehaviour {
 
     public void EndTurn()
     {
-        List<StatusEffect> removalList = new List<StatusEffect>();
-        foreach(StatusEffect se in movementEffects)
-        {
-            se.Duration--;
-            if (se.Duration <= 0) removalList.Add(se);
-        }
-
-        foreach(StatusEffect se in removalList)
-        {
-            movementEffects.Remove(se);
-        }
-
-        removalList.Clear();
-        foreach (StatusEffect se in attackEffects)
-        {
-            se.Duration--;
-            if (se.Duration <= 0) removalList.Add(se);
-        }
-
-        foreach (StatusEffect se in removalList)
-        {
-            attackEffects.Remove(se);
-        }
-
-        removalList.Clear();
-        foreach (StatusEffect se in debuffEffects)
-        {
-            se.Duration--;
-            if (se.Duration <= 0) removalList.Add(se);
-        }
-
-        foreach (StatusEffect se in removalList)
-        {
-            debuffEffects.Remove(se);
-        }
+        m_statusEffects.IncrementEffects();
 
         this.TurnOver = false;
 

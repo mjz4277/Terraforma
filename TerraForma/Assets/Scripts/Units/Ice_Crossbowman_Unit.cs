@@ -19,12 +19,18 @@ public class Ice_Crossbowman_Unit : Unit {
     {
         _name = "Crossbowman";
         _element = Element.Ice;
-        _move = 2;
-        _attack = 1.0f;
-        _defense = 3.0f;
-        _range = 3;
-        _health = 100.0f;
-        _possibleMove = _move;
+
+        stats.Health = 100.0f;
+        stats.Mana = 100.0f;
+        stats.Move = 2;
+        stats.Attack = 1.0f;
+        stats.PhysicalDefense = 3.0f;
+        stats.MagicDefense = 3.0f;
+        stats.Range = 3;
+
+        _health = stats.Health;
+        _mana = stats.Mana;
+        _possibleMove = stats.Move;
     }
 
     protected override void SetPowers()
