@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public abstract class Unit : MonoBehaviour
 {
 
+    protected UnitMove unitMove;
+
     protected MeshRenderer meshRenderer;
 
     protected Material mat_default;
@@ -159,6 +161,7 @@ public abstract class Unit : MonoBehaviour
 
     protected virtual void Init()
     {
+        unitMove = GetComponent<UnitMove>();
         meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
         mat_ended = Resources.Load<Material>("Materials/Unit_Turn_Over");
         stats = gameObject.GetComponent<UnitStats>();
@@ -210,6 +213,11 @@ public abstract class Unit : MonoBehaviour
     public void UsePower(int index, List<Tile> tiles, List<Unit> units)
     {
         powers[index].UsePower(tiles, units);
+    }
+
+    public void MoveTo(Tile t)
+    {
+        unitMove.MoveTo(t);
     }
 
     public virtual void TakeDamage(float amount)

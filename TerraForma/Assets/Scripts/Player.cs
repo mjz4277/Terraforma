@@ -18,6 +18,9 @@ public enum Element
 
 public class Player : MonoBehaviour {
 
+    private PlayerInput input;
+    private PlayerController controller;
+
     string _name;
     float _manaRegen;
     float _maxMana;
@@ -101,6 +104,8 @@ public class Player : MonoBehaviour {
 
     public void Init()
     {
+        input = GetComponent<PlayerInput>();
+        controller = GetComponent<PlayerController>();
         _maxMana = 10;
         _manaRegen = 1;
         _mana = 10;
@@ -114,7 +119,15 @@ public class Player : MonoBehaviour {
 
     public void StartTurn()
     {
+        input.IsTurn = true;
+        controller.StartTurn();
         RegenMana();
+    }
+
+    public void EndTurn()
+    {
+        input.IsTurn = false;
+        controller.EndTurn();
     }
 
     public void RegenMana()

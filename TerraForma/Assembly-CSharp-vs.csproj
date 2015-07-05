@@ -49,9 +49,12 @@
      <Compile Include="Assets\Scripts\Biome.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\HUDManager.cs" />
+     <Compile Include="Assets\Scripts\Interfaces.cs" />
      <Compile Include="Assets\Scripts\LevelManager.cs" />
      <Compile Include="Assets\Scripts\MoveCamera.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
+     <Compile Include="Assets\Scripts\PlayerController.cs" />
+     <Compile Include="Assets\Scripts\PlayerInput.cs" />
      <Compile Include="Assets\Scripts\Powers\Earth\p_Earth_EarthShatteringBlow.cs" />
      <Compile Include="Assets\Scripts\Powers\Earth\p_Earth_Pillar.cs" />
      <Compile Include="Assets\Scripts\Powers\Electric\p_Electric_Crackle.cs" />
@@ -74,6 +77,7 @@
      <Compile Include="Assets\Scripts\StatusEffects\se_Silence.cs" />
      <Compile Include="Assets\Scripts\StatusEffects\se_Slow.cs" />
      <Compile Include="Assets\Scripts\StatusEffects\se_Stun.cs" />
+     <Compile Include="Assets\Scripts\TileManager.cs" />
      <Compile Include="Assets\Scripts\Tiles\Tile Base Data\TileBaseData.cs" />
      <Compile Include="Assets\Scripts\Tiles\Tile Base Data\tbd_Default.cs" />
      <Compile Include="Assets\Scripts\Tiles\Tile Base Data\tbd_Jungle.cs" />
@@ -95,6 +99,7 @@
      <Compile Include="Assets\Scripts\Units\Nature_Axeman_Unit.cs" />
      <Compile Include="Assets\Scripts\Units\SEManager.cs" />
      <Compile Include="Assets\Scripts\Units\Unit.cs" />
+     <Compile Include="Assets\Scripts\Units\UnitMove.cs" />
      <Compile Include="Assets\Scripts\Units\UnitStats.cs" />
      <Compile Include="Assets\Scripts\Units\Water_Spearman_Unit.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
