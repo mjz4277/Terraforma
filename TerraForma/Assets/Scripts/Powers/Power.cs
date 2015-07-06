@@ -18,17 +18,21 @@ public enum PowerTarget
     Both
 }
 
-public class Power{
+public class Power : MonoBehaviour {
 
     protected PowerType e_type;
     protected PowerTarget e_target;
 
     protected Unit _owner;
 
+    [SerializeField]
     protected string _name;
+    [SerializeField]
     protected int _cooldown;
     protected int _currCooldown;
+    [SerializeField]
     protected float _manaCost;
+    [SerializeField]
     protected float _damage;
     //private int slow;
     //private float reduceAtt;
@@ -37,13 +41,14 @@ public class Power{
     //private bool canUsePower;
     //private bool stunned;
     //private GameObject target;
+    [SerializeField]
     protected int _range;
+    [SerializeField]
     protected int _aoe;
 
     public Unit Owner
     {
         get { return _owner; }
-        set { _owner = value; }
     }
 
     public string Name
@@ -98,6 +103,11 @@ public class Power{
     {
         get { return e_type; }
         set { e_type = value; }
+    }
+
+    public void Start()
+    {
+        _owner = GetComponent<Unit>();
     }
 
     /*

@@ -171,7 +171,17 @@ public abstract class Unit : MonoBehaviour
         SetPowers();
     }
 
-    protected abstract void SetPowers();
+    protected void SetPowers()
+    {
+        Power[] possiblePowers = GetComponents<Power>();
+        for(int i = 0; i < 4; i++)
+        {
+            if(i < possiblePowers.Length)
+            {
+                powers[i] = possiblePowers[i];
+            }
+        }
+    }
 
     public abstract void LoadResources();
 

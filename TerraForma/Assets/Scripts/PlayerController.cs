@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour {
     private Player player;
     private TileManager m_tiles;
     private HUDManager m_hud;
+    private PowerManager m_power;
 
     private Unit selectedUnit;
     private Power selectedPower;
@@ -41,6 +42,7 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         player = GetComponent<Player>();
+        m_power = GetComponent<PowerManager>();
         m_tiles = GameObject.FindGameObjectWithTag("GameController").GetComponent<TileManager>();
         m_hud = GameObject.FindGameObjectWithTag("GameController").GetComponent<HUDManager>();
 
@@ -56,7 +58,7 @@ public class PlayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
     {
-
+        
 	}
 
     //Decide what is done if a unit was selected
@@ -186,21 +188,29 @@ public class PlayerController : MonoBehaviour {
     public void DisplayPower(int pIndex)
     {
         e_playerState = PlayerState.UnitPower;
-        selectedPower = selectedUnit.Powers[pIndex];
+
+        //Check for 
+        if(pIndex < selectedUnit.Powers.Length)
+        {
+            selectedPower = selectedUnit.Powers[pIndex];
+            m_power.CurrentPower = selectedPower;
+        }
+            
     }
 
+    //Power target is updated every frame if being displayed
     public void ProcessPowerType(Tile chosen)
     {
-        if (!possibleTiles.Contains(chosen))
+        tilesInPower = m_power.ProcessPowerType(chosen, selectedUnit.CurrentTile);
+
+        m_tiles.ClearSelectedTiles();
+        
+        foreach(Tile t in tilesInPower)
         {
-            chosen = m_tiles.GetNearestPossibleTile(chosen, possibleTiles);
-        }
-        foreach (Tile t in possibleTiles)
-        {
-            t.ClearSelection();
+            t.Adjacent = true;
         }
 
-        chosen.Selected = true;
+        //chosen.Selected = true;
     }
 
     //Resolve an attack against a unit
@@ -260,6 +270,14 @@ public class PlayerController : MonoBehaviour {
     //Resolve the use of a power
     private void ResolvePower(Tile chosen)
     {
+        unitsInPower.Clear();
+        foreach(Tile t in tilesInPower)
+        {
+            if(t.Occupied)
+            {
+                unitsInPower.Add(t.OccupiedBy);
+            }
+        }
         selectedPower.UsePower(tilesInPower, unitsInPower);
         e_playerState = PlayerState.Default;
 
