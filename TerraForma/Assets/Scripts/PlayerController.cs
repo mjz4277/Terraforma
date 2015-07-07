@@ -14,9 +14,6 @@ public class PlayerController : MonoBehaviour {
     }
     private PlayerState e_playerState;
 
-    private delegate void del_DisplayAction();
-    private del_DisplayAction DisplayAction;
-
     private delegate void del_Action(Tile t);
     private del_Action ResolveAction;
 
@@ -51,8 +48,6 @@ public class PlayerController : MonoBehaviour {
 
         tilesInPower = new List<Tile>();
         unitsInPower = new List<Unit>();
-
-        DisplayAction = DisplayMove;
 	}
 	
 	// Update is called once per frame
@@ -201,6 +196,11 @@ public class PlayerController : MonoBehaviour {
     //Power target is updated every frame if being displayed
     public void ProcessPowerType(Tile chosen)
     {
+        if (!m_power.CurrentPower)
+        {
+            Debug.Log("No Power Selected");
+            return;
+        }
         tilesInPower = m_power.ProcessPowerType(chosen, selectedUnit.CurrentTile);
 
         m_tiles.ClearSelectedTiles();
@@ -282,9 +282,7 @@ public class PlayerController : MonoBehaviour {
         e_playerState = PlayerState.Default;
 
         //Unit's turn ends after using a power
-        selectedUnit.PossibleMove = 0;
-        selectedUnit.CanAttack = false;
-        selectedUnit.TurnOver = true;
+        selectedUnit.EndTurn();
     }
 
     //Clear the currently chosen tiles and units

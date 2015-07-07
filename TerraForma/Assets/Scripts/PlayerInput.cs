@@ -6,7 +6,6 @@ public class PlayerInput : MonoBehaviour {
 
     private bool _isTurn = false;
 
-    private Player player;
     private PlayerController controller;
 
     public bool IsTurn
@@ -18,7 +17,6 @@ public class PlayerInput : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
     {
-        player = GetComponent<Player>();
         controller = GetComponent<PlayerController>();
 	}
 	

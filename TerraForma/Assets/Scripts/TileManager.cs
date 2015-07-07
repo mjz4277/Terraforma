@@ -54,6 +54,16 @@ public class TileManager : MonoBehaviour {
         return closest;
     }
 
+    public List<Tile> GetTilesAlongVector(Vector3 v, List<Tile> range, float tolerance)
+    {
+        return null;
+    }
+
+    public List<Tile> GetTilesAlongCone(Vector3 v, List<Tile> range, Tile origin, float coneExpansion, float tolerance)
+    {
+        return null;
+    }
+
     public List<Tile> GetPossibleTiles(Tile startTile, int distance, bool ignoreUnits)
     {
         List<Tile> unvisitedList = new List<Tile>();

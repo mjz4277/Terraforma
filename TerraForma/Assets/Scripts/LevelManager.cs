@@ -138,13 +138,8 @@ public class LevelManager : MonoBehaviour {
             }
             else
             {
-                u.EndTurn();
+                u.ChangeTurn();
             }
         }
-    }
-
-    public void ParsePower(Power p, ref List<Tile> affectedTiles, ref List<Unit> affectedUnits)
-    {
-
     }
 }

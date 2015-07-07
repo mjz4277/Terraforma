@@ -110,13 +110,6 @@ public class Power : MonoBehaviour {
         _owner = GetComponent<Unit>();
     }
 
-    /*
-    public virtual void ProcessPower(List<Tile> tiles)
-    {
-
-    }
-     * */
-
     public virtual void UsePower(List<Tile> tiles, List<Unit> units)
     {
         Debug.Log("Power [" + _name + "] used");

@@ -215,9 +215,7 @@ public abstract class Unit : MonoBehaviour
         enemy.TakeDamage(attack - defense);
 
         //Unit's turn ends after attacking
-        this.PossibleMove = 0;
-        this.CanAttack = false;
-        this.TurnOver = true;
+        EndTurn();
     }
 
     public void UsePower(int index, List<Tile> tiles, List<Unit> units)
@@ -273,9 +271,7 @@ public abstract class Unit : MonoBehaviour
             }
             if (se is se_Stun)
             {
-                _canAttack = false;
-                _canUsePower = false;
-                _possibleMove = 0;
+                EndTurn();
                 break;
             }
         }
@@ -289,14 +285,20 @@ public abstract class Unit : MonoBehaviour
             }
         }
 
-        //Get effects from tile
+        //TODO: Get effects from tile
     }
 
     public void EndTurn()
     {
+        this.PossibleMove = 0;
+        this.CanAttack = false;
+        this.TurnOver = true;
+    }
+
+    public void ChangeTurn()
+    {
         m_statusEffects.IncrementEffects();
 
         this.TurnOver = false;
-
     }
 }

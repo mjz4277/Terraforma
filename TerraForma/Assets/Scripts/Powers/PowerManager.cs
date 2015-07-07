@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class PowerManager : MonoBehaviour {
 
+    private delegate List<Tile> PowerProcesser(Tile chosen, Tile origin, List<Tile> range);
+    private PowerProcesser ProcessPower;
+
     TileManager m_tiles;
 
     private Power currentPower;
@@ -32,12 +35,26 @@ public class PowerManager : MonoBehaviour {
         switch(currentPower.Type)
         {
             case PowerType.Area:
-                tilesInPower = ProcessAreaPower(chosen, origin, range);
+                ProcessPower = ProcessAreaPower;
+                break;
+            case PowerType.Biome:
+                ProcessPower = ProcessBiomePower;
                 break;
             case PowerType.Burst:
-                tilesInPower = ProcessBurstPower(chosen, origin, range);
+                ProcessPower = ProcessBurstPower;
+                break;
+            case PowerType.Cone:
+                ProcessPower = ProcessConePower;
+                break;
+            case PowerType.Line:
+                ProcessPower = ProcessLinePower;
+                break;
+            default:
+                Debug.Log("ERROR: Power type [" + currentPower.Type + "] not recognized");
                 break;
         }
+
+        tilesInPower = ProcessPower(chosen, origin, range);
 
         return tilesInPower;
     }
@@ -61,16 +78,27 @@ public class PowerManager : MonoBehaviour {
         return tilesInPower;
     }
 
-    public void GetPossibleTargets(Power p)
+    private List<Tile> ProcessLinePower(Tile chosen, Tile origin, List<Tile> range)
     {
+        Vector3 line = GetVectorBetweenTiles(chosen, origin);
+        List<Tile> tilesInPower = m_tiles.GetTilesAlongVector(line, range, 0.5f);
+        return tilesInPower;
     }
 
-    private void GetUnitsInRange(Power p)
+    private List<Tile> ProcessConePower(Tile chosen, Tile origin, List<Tile> range)
     {
-
+        Vector3 line = GetVectorBetweenTiles(chosen, origin);
+        List<Tile> tilesInPower = m_tiles.GetTilesAlongCone(line, range, origin, 3.0f, 0.5f);
+        return tilesInPower;
     }
 
-    private void GetTilesInRange(Power p)
+    private List<Tile> ProcessBiomePower(Tile chosen, Tile origin, List<Tile> range)
     {
+        return null;
+    }
+
+    private Vector3 GetVectorBetweenTiles(Tile t1, Tile t2)
+    {
+        return Vector3.zero;
     }
 }
