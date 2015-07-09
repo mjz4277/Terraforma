@@ -70,6 +70,7 @@
      <Compile Include="Assets\Scripts\Powers\PowerManager.cs" />
      <Compile Include="Assets\Scripts\Powers\Power_TileTargeted.cs" />
      <Compile Include="Assets\Scripts\Powers\Power_UnitTargeted.cs" />
+     <Compile Include="Assets\Scripts\Powers\Water\p_Water_Riptide.cs" />
      <Compile Include="Assets\Scripts\StatusEffects\StatusEffect.cs" />
      <Compile Include="Assets\Scripts\StatusEffects\se_DOT.cs" />
      <Compile Include="Assets\Scripts\StatusEffects\se_Disarm.cs" />

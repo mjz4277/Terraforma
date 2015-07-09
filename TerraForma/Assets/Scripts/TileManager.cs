@@ -54,9 +54,43 @@ public class TileManager : MonoBehaviour {
         return closest;
     }
 
-    public List<Tile> GetTilesAlongVector(Vector3 v, List<Tile> range, float tolerance)
+    //TODO: Tolerance problems if too far away and only positive direction of lines
+    //TODO: Distance restriction if tolerance problem persists
+    public List<Tile> GetTilesAlongVector(Vector3 v, List<Tile> range, Tile origin, Tile chosen, float tolerance)
     {
-        return null;
+        List<Tile> validTiles = new List<Tile>();
+        Tile next = origin;
+        int iterations = 0;
+        bool possibleTiles = true;
+
+        while (possibleTiles && iterations < 100)
+        {
+            iterations++;
+            possibleTiles = false;
+            foreach (Tile t in next.AdjacentTiles)
+            {
+                //Vector3 between = t.gameObject.transform.position - origin.gameObject.transform.position;
+                Vector3 between = origin.gameObject.transform.position - t.gameObject.transform.position;
+                float dist = Vector3.Magnitude(Vector3.Cross(v, between)) / Vector3.Magnitude(v);
+                if (dist <= tolerance && Vector3.Dot(v, between) > 0)
+                {
+                    if (range.Contains(t)  && !validTiles.Contains(t))
+                    {
+                        possibleTiles = true;
+                        validTiles.Add(t);
+                        next = t;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return validTiles;
+    }
+
+    private void CalculateNextTileInLine(Tile next, Tile origin)
+    {
+
     }
 
     public List<Tile> GetTilesAlongCone(Vector3 v, List<Tile> range, Tile origin, float coneExpansion, float tolerance)
