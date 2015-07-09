@@ -198,7 +198,7 @@ public class PlayerController : MonoBehaviour {
     {
         if (!m_power.CurrentPower)
         {
-            Debug.Log("No Power Selected");
+            //Debug.Log("No Power Selected");
             return;
         }
         tilesInPower = m_power.ProcessPowerType(chosen, selectedUnit.CurrentTile);
@@ -279,10 +279,11 @@ public class PlayerController : MonoBehaviour {
             }
         }
         selectedPower.UsePower(tilesInPower, unitsInPower);
-        e_playerState = PlayerState.Default;
 
         //Unit's turn ends after using a power
         selectedUnit.EndTurn();
+
+        CancelAction();
     }
 
     //Clear the currently chosen tiles and units

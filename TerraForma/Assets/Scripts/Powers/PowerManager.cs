@@ -80,15 +80,15 @@ public class PowerManager : MonoBehaviour {
 
     private List<Tile> ProcessLinePower(Tile chosen, Tile origin, List<Tile> range)
     {
-        Vector3 line = GetVectorBetweenTiles(origin, chosen);
-        List<Tile> tilesInPower = m_tiles.GetTilesAlongVector(line, range, origin, chosen, 0.01f);
+        Vector3 line = GetVectorBetweenTiles(chosen, origin);
+        List<Tile> tilesInPower = m_tiles.GetTilesAlongVector(line, range, origin, 0.01f);
         return tilesInPower;
     }
 
     private List<Tile> ProcessConePower(Tile chosen, Tile origin, List<Tile> range)
     {
         Vector3 line = GetVectorBetweenTiles(chosen, origin);
-        List<Tile> tilesInPower = m_tiles.GetTilesAlongCone(line, range, origin, 3.0f, 0.5f);
+        List<Tile> tilesInPower = m_tiles.GetTilesAlongCone(line, range, origin, 3.0f, 0.01f);
         return tilesInPower;
     }
 

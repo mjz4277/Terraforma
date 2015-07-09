@@ -56,7 +56,7 @@ public class TileManager : MonoBehaviour {
 
     //TODO: Tolerance problems if too far away and only positive direction of lines
     //TODO: Distance restriction if tolerance problem persists
-    public List<Tile> GetTilesAlongVector(Vector3 v, List<Tile> range, Tile origin, Tile chosen, float tolerance)
+    public List<Tile> GetTilesAlongVector(Vector3 v, List<Tile> range, Tile origin, float tolerance)
     {
         List<Tile> validTiles = new List<Tile>();
         Tile next = origin;
@@ -69,8 +69,8 @@ public class TileManager : MonoBehaviour {
             possibleTiles = false;
             foreach (Tile t in next.AdjacentTiles)
             {
-                //Vector3 between = t.gameObject.transform.position - origin.gameObject.transform.position;
-                Vector3 between = origin.gameObject.transform.position - t.gameObject.transform.position;
+                Vector3 between = t.gameObject.transform.position - origin.gameObject.transform.position;
+                //Vector3 between = origin.gameObject.transform.position - t.gameObject.transform.position;
                 float dist = Vector3.Magnitude(Vector3.Cross(v, between)) / Vector3.Magnitude(v);
                 if (dist <= tolerance && Vector3.Dot(v, between) > 0)
                 {

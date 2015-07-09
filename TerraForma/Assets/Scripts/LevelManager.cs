@@ -94,21 +94,54 @@ public class LevelManager : MonoBehaviour {
 
     public void SetUpUnits(Player p)
     {
-        UnitManager m_units = GameObject.Find("GameManager").GetComponent<UnitManager>();
+        m_tiles = GetComponent<TileManager>();
+        m_units = GetComponent<UnitManager>();
         for (int i = 0; i < p.Elements.Length; i++)
         {
             Element e = p.Elements[i];
-            GameObject u = Instantiate(m_units.units[e]) as GameObject;
+            GameObject u_obj = Instantiate(m_units.units[e]) as GameObject;
             //u.transform.SetParent(this.gameObject.transform);
-            Unit u_s = u.GetComponent<Unit>();
-            units.Add(u_s);
-            u_s.Team = p.Team;
-            p.AddUnit(u_s);
+            Unit u = u_obj.GetComponent<Unit>();
+            units.Add(u);
+            u.Team = p.Team;
+            p.AddUnit(u);
             int rand = Random.Range(0, tiles.Count);
-            u_s.CurrentTile = tiles[rand];
-            u_s.SnapToCurrent();
+            u.CurrentTile = tiles[rand];
+            u.SnapToCurrent();
             tiles[rand].Occupied = true;
-            tiles[rand].OccupiedBy = u_s;
+            tiles[rand].OccupiedBy = u;
+
+            SetUpMinorUnits(p, u, e);
+        }
+    }
+
+    public void SetUpMinorUnits(Player p, Unit u, Element e)
+    {
+        for(int i = 0; i < 3; i++)
+        {
+
+            GameObject uMinor_obj = Instantiate(m_units.minorUnits[e]) as GameObject;
+            Unit uMinor = uMinor_obj.GetComponent<Unit>();
+
+            units.Add(uMinor);
+            uMinor.Team = p.Team;
+            p.AddUnit(uMinor);
+
+            foreach(Tile t in u.CurrentTile.AdjacentTiles)
+            {
+                if (t.Occupied)
+                {
+                    continue;
+                }
+                else
+                {
+                    uMinor.CurrentTile = t;
+                    uMinor.SnapToCurrent();
+                    t.Occupied = true;
+                    t.OccupiedBy = u;
+                    break;
+                }
+            }
         }
     }
 
