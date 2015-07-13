@@ -105,11 +105,20 @@ public class LevelManager : MonoBehaviour {
             units.Add(u);
             u.Team = p.Team;
             p.AddUnit(u);
-            int rand = Random.Range(0, tiles.Count);
-            u.CurrentTile = tiles[rand];
-            u.SnapToCurrent();
-            tiles[rand].Occupied = true;
-            tiles[rand].OccupiedBy = u;
+
+            int iter = 0;
+            while(iter < 100)
+            {
+                int rand = Random.Range(0, tiles.Count);
+                if(!tiles[rand].Occupied)
+                {
+                    u.CurrentTile = tiles[rand];
+                    u.SnapToCurrent();
+                    tiles[rand].Occupied = true;
+                    tiles[rand].OccupiedBy = u;
+                    break;
+                }
+            }
 
             SetUpMinorUnits(p, u, e);
         }

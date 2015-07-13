@@ -6,8 +6,11 @@ public class TileManager : MonoBehaviour {
 
     private List<Tile> tiles = new List<Tile>();
 
+    private string[] tileTypes = new string[6];
+
 	// Use this for initialization
 	void Start () {
+
 	}
 	
 	// Update is called once per frame
@@ -17,10 +20,19 @@ public class TileManager : MonoBehaviour {
 
     public void Init()
     {
+        tileTypes[0] = "Default";
+        tileTypes[1] = "Mountain";
+        tileTypes[2] = "Rubble";
+        tileTypes[3] = "Woods";
+        tileTypes[4] = "Jungle";
+        tileTypes[5] = "Water";
+
         GameObject[] obj_tiles = GameObject.FindGameObjectsWithTag("Tile");
         for (int i = 0; i < obj_tiles.Length; i++)
         {
             Tile t = obj_tiles[i].GetComponent<Tile>();
+            int rand = Random.Range(0, tileTypes.Length);
+            t.ChangeTileBaseData(tileTypes[rand]);
             tiles.Add(t);
         }
     }
