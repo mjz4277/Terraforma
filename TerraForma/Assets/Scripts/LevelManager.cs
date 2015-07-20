@@ -1,18 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml.Serialization;
+
 
 public class LevelManager : MonoBehaviour {
 
+    private ResourceManager m_resources;
     private TileManager m_tiles;
     private UnitManager m_units;
 
+    private XmlSerializer xml_serializer = new XmlSerializer(typeof(BiomeTable));
+    private StreamReader loadStream;
+    private BiomeTable biomeTable = new BiomeTable();
+
     private Transform boardHolder;
     //Board might be ~30x30
-    int map_width = 20;
-    int map_height = 20;
+    int map_width = 15;
+    int map_height = 15;
+    int minor_units = 0;
     GameObject[,] map;
-    List<Vector3> mapPositions = new List<Vector3>();
     List<Tile> tiles = new List<Tile>();
     List<Unit> units = new List<Unit>();
     public GameObject[] tile_types;
@@ -28,14 +36,36 @@ public class LevelManager : MonoBehaviour {
     }
    
 	void Start () {
+        Debug.Log("Level Manager Started");
+        m_resources = GetComponent<ResourceManager>();
         m_tiles = GetComponent<TileManager>();
         m_units = GetComponent<UnitManager>();
+        LoadBiomeTable();
+        //BuildMap();
+        BuildRegion(0);
+        SetUpUnits();
+        m_tiles.Init();
+        m_units.Init();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
+
+    private void LoadBiomeTable()
+    {
+        try
+        {
+            loadStream = new StreamReader(@"Assets/XML/biomes.xml");
+            biomeTable = (BiomeTable)xml_serializer.Deserialize(loadStream);
+            loadStream.Close();
+        }
+        catch(IOException e)
+        {
+            Debug.Log("Error: " + e.Message);
+        }
+    }
 
     public void BuildMap()
     {
@@ -54,7 +84,6 @@ public class LevelManager : MonoBehaviour {
             for (int j = 0; j < map_height; j++)
             {
                 Vector3 pos = new Vector3(i * ((tile_height * 0.75f) + tile_spacing), 0, j * (tile_width + tile_spacing) + nextOff);
-                mapPositions.Add(pos);
                 GameObject tile = Instantiate(tile_types[0], pos, Quaternion.identity) as GameObject;
                 tile.name = "Tile";
                 tile.transform.SetParent(boardHolder);
@@ -66,6 +95,49 @@ public class LevelManager : MonoBehaviour {
 
         //Give the tiles references to their neighbors
         LinkTiles();
+    }
+
+    public void BuildRegion(int regionIndex)
+    {
+        int regionSize = biomeTable.Biomes.Biomes[regionIndex].Size;
+        boardHolder = new GameObject("Board").transform;
+
+        tile_height = 2.0f;
+        tile_width = (Mathf.Sqrt(3) / 2) * tile_height;
+
+        float offset = (tile_size / 2) * Mathf.Sqrt(2);
+        offset = (tile_width / 2) + (tile_spacing / 2);
+        float totalOff = 0.0f;
+        int numRows = regionSize * 2 - 1;
+        int rowSize = regionSize;
+        for(int i = 0; i < numRows; i++)
+        {
+            for(int j = 0; j < rowSize; j++)
+            {
+                Vector3 pos = new Vector3(i * ((tile_height * 0.75f) + tile_spacing), 0, j * (tile_width + tile_spacing) + totalOff);
+                GameObject tile = Instantiate(tile_types[0], pos, Quaternion.identity) as GameObject;
+                tile.name = "Tile";
+                tile.transform.SetParent(boardHolder);
+                //map[i, j] = tile;
+                Tile t = tile.GetComponent<Tile>();
+                tiles.Add(t);
+            }
+
+            if(i < regionSize - 1)
+            {
+                totalOff -= offset;
+                rowSize++;
+            }
+            else
+            {
+                totalOff += offset;
+                rowSize--;
+            }
+        }
+
+        //Give the tiles references to their neighbors
+        LinkTiles();
+        SetTileData(regionIndex);
     }
 
     private void LinkTiles()
@@ -92,44 +164,69 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-    public void SetUpUnits(Player p)
+    private void SetTileData(int regionIndex)
+    {
+        List<Row_XML> rows = biomeTable.Biomes.Biomes[regionIndex].Rows.Row;
+        int tileIndex = 0;
+        foreach(Row_XML rowxml in rows)
+        {
+            foreach(Tile_XML txml in rowxml.Tile)
+            {
+                Tile t = tiles[tileIndex];
+                t.ChangeTileBaseData(txml.Base);
+                tileIndex++;
+                if (tileIndex >= tiles.Count) return;
+            }
+        }
+    }
+
+    public void SetUpUnits()
     {
         m_tiles = GetComponent<TileManager>();
         m_units = GetComponent<UnitManager>();
-        for (int i = 0; i < p.Elements.Length; i++)
+        GameObject[] playerGO = GameObject.FindGameObjectsWithTag("Player");
+        Player[] players = new Player[playerGO.Length];
+        for (int i = 0; i < playerGO.Length; i++ )
         {
-            Element e = p.Elements[i];
-            GameObject u_obj = Instantiate(m_units.units[e]) as GameObject;
-            //u.transform.SetParent(this.gameObject.transform);
-            Unit u = u_obj.GetComponent<Unit>();
-            units.Add(u);
-            u.Team = p.Team;
-            p.AddUnit(u);
-
-            int iter = 0;
-            while(iter < 100)
+            players[i] = playerGO[i].GetComponent<Player>();
+        }
+        foreach(Player p in players)
+        {
+            for (int i = 0; i < p.Elements.Length; i++)
             {
-                int rand = Random.Range(0, tiles.Count);
-                if(!tiles[rand].Occupied)
-                {
-                    u.CurrentTile = tiles[rand];
-                    u.SnapToCurrent();
-                    tiles[rand].Occupied = true;
-                    tiles[rand].OccupiedBy = u;
-                    break;
-                }
-            }
+                Element e = p.Elements[i];
+                GameObject u_obj = Instantiate(m_resources.unitGO[e]) as GameObject;
+                //u.transform.SetParent(this.gameObject.transform);
+                Unit u = u_obj.GetComponent<Unit>();
+                units.Add(u);
+                u.Team = p.Team;
+                p.AddUnit(u);
 
-            SetUpMinorUnits(p, u, e);
+                int iter = 0;
+                while (iter < 100)
+                {
+                    int rand = Random.Range(0, tiles.Count);
+                    if (!tiles[rand].Occupied)
+                    {
+                        u.CurrentTile = tiles[rand];
+                        u.SnapToCurrent();
+                        tiles[rand].Occupied = true;
+                        tiles[rand].OccupiedBy = u;
+                        break;
+                    }
+                }
+
+                SetUpMinorUnits(p, u, e);
+            }
         }
     }
 
     public void SetUpMinorUnits(Player p, Unit u, Element e)
     {
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < minor_units; i++)
         {
 
-            GameObject uMinor_obj = Instantiate(m_units.minorUnits[e]) as GameObject;
+            GameObject uMinor_obj = Instantiate(m_resources.minorUnitGO[e]) as GameObject;
             Unit uMinor = uMinor_obj.GetComponent<Unit>();
 
             units.Add(uMinor);
@@ -151,14 +248,6 @@ public class LevelManager : MonoBehaviour {
                     break;
                 }
             }
-        }
-    }
-
-    public void ClearSelectedUnit()
-    {
-        foreach (Unit u in units)
-        {
-            u.Selected = false;
         }
     }
 

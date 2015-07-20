@@ -6,8 +6,10 @@ public class GameManager : MonoBehaviour
 {
 
     public static GameManager instance = null;
+    ResourceManager m_resources;
     LevelManager m_level;
     TileManager m_tiles;
+    UnitManager m_units;
     HUDManager m_hud;
 
     Player player_1;
@@ -33,7 +35,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("GameManager Started");
         m_level = GetComponent<LevelManager>();
         m_tiles = GetComponent<TileManager>();
+        m_units = GetComponent<UnitManager>();
         m_hud = GetComponent<HUDManager>();
+        m_resources = GetComponent<ResourceManager>();
 
         InitGame();
     }
@@ -41,11 +45,9 @@ public class GameManager : MonoBehaviour
     void InitGame()
     {
         m_hud.Init();
-        m_level.BuildMap();
-        m_tiles.Init();
         InitPlayers();
-        m_level.SetUpUnits(player_1);
-        m_level.SetUpUnits(player_2);
+        //m_level.SetUpUnits(player_1);
+        //m_level.SetUpUnits(player_2);
         current_player = player_1;
         m_hud.HideUnitInfo();
         m_hud.HideUnitActions();
@@ -115,6 +117,6 @@ public class GameManager : MonoBehaviour
 
         m_hud.HideUnitInfo();
         m_tiles.ClearSelectedTiles();
-        m_level.ClearSelectedUnit();
+        m_units.ClearSelectedUnits();
     }
 }

@@ -30,8 +30,6 @@ public class HUDManager : MonoBehaviour {
         unitHUD = hud.transform.Find("Unit_Info").gameObject;
         unitActionsHUD = hud.transform.Find("Unit_Actions").gameObject;
 
-        Debug.Log(playerHUD);
-
         p_name = playerHUD.transform.Find("Player_name").gameObject.GetComponent<Text>();
         p_mana = playerHUD.transform.Find("Player_mana").gameObject.GetComponent<Text>();
 

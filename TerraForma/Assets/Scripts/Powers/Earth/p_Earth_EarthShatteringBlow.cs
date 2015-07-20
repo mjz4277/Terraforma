@@ -21,8 +21,6 @@ public class p_Earth_EarthShatteringBlow : Power {
         Unit u_target = units[0];
         u_target.TakeDamage(_damage);
         Debug.Log("Unit [" + u_target.Name + "] took [" + _damage + "] damage");
-        u_target.AddStatusEffect(new se_Immobilize("Earth-Shattering Blow", 1));
-        Debug.Log("Unit [" + u_target.Name + "] is IMMOBILIZED");
         Tile t_target = u_target.CurrentTile;
         foreach(Tile t in t_target.AdjacentTiles)
         {

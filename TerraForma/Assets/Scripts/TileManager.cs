@@ -20,19 +20,10 @@ public class TileManager : MonoBehaviour {
 
     public void Init()
     {
-        tileTypes[0] = "Default";
-        tileTypes[1] = "Mountain";
-        tileTypes[2] = "Rubble";
-        tileTypes[3] = "Woods";
-        tileTypes[4] = "Jungle";
-        tileTypes[5] = "Water";
-
         GameObject[] obj_tiles = GameObject.FindGameObjectsWithTag("Tile");
-        for (int i = 0; i < obj_tiles.Length; i++)
+        for(int i = 0; i < obj_tiles.Length; i++)
         {
             Tile t = obj_tiles[i].GetComponent<Tile>();
-            int rand = Random.Range(0, tileTypes.Length);
-            t.ChangeTileBaseData(tileTypes[rand]);
             tiles.Add(t);
         }
     }
@@ -100,14 +91,57 @@ public class TileManager : MonoBehaviour {
         return validTiles;
     }
 
-    private void CalculateNextTileInLine(Tile next, Tile origin)
-    {
-
-    }
-
     public List<Tile> GetTilesAlongCone(Vector3 v, List<Tile> range, Tile origin, float coneExpansion, float tolerance)
     {
-        return null;
+        List<Tile> validTiles = new List<Tile>();
+        List<Tile> nextTiles = new List<Tile>();
+        List<Tile> nextStep = new List<Tile>();
+        nextTiles.Add(origin);
+        int iterations = 0;
+        bool possibleTiles = true;
+
+        int tileAmount = 1;
+        float coneSize = coneExpansion;
+
+        while (possibleTiles && iterations < 100)
+        {
+            int currTileAmount = 0;
+            tileAmount++;
+            iterations++;
+            possibleTiles = false;
+            coneSize += coneExpansion;
+            nextStep.Clear();
+
+            foreach (Tile next in nextTiles)
+            {
+                foreach (Tile t in next.AdjacentTiles)
+                {
+                    Vector3 between = t.gameObject.transform.position - next.gameObject.transform.position;
+                    float dist = Vector3.Magnitude(Vector3.Cross(v, between)) / Vector3.Magnitude(v);
+                    if (dist <= coneSize && Vector3.Dot(v, between) > 0)
+                    {
+                        if (range.Contains(t) && !validTiles.Contains(t))
+                        {
+                            possibleTiles = true;
+                            validTiles.Add(t);
+                            nextStep.Add(t);
+                            currTileAmount++;
+                            if(currTileAmount >= tileAmount)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            nextTiles.Clear();
+            foreach(Tile t in nextStep)
+            {
+                nextTiles.Add(t);
+            }
+        }
+
+        return validTiles;
     }
 
     public List<Tile> GetPossibleTiles(Tile startTile, int distance, bool ignoreUnits)
@@ -215,5 +249,11 @@ public class TileManager : MonoBehaviour {
 
         //Keep doing it
         DijkstraStep(next, ref unvisited, ref visited, distance, ignoreUnits);
+    }
+
+    public Vector3 GetVectorBetweenTiles(Tile t1, Tile t2)
+    {
+        Vector3 v = t1.gameObject.transform.position - t2.gameObject.transform.position;
+        return v;
     }
 }

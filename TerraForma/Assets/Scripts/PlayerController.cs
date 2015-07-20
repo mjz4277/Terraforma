@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour {
 
     private Player player;
     private TileManager m_tiles;
+    private UnitManager m_units;
     private HUDManager m_hud;
     private PowerManager m_power;
 
@@ -41,6 +42,7 @@ public class PlayerController : MonoBehaviour {
         player = GetComponent<Player>();
         m_power = GetComponent<PowerManager>();
         m_tiles = GameObject.FindGameObjectWithTag("GameController").GetComponent<TileManager>();
+        m_units = GameObject.FindGameObjectWithTag("GameController").GetComponent<UnitManager>();
         m_hud = GameObject.FindGameObjectWithTag("GameController").GetComponent<HUDManager>();
 
         possibleTiles = new List<Tile>();
@@ -60,6 +62,7 @@ public class PlayerController : MonoBehaviour {
     public void ResolveUnitSelection(Unit chosen)
     {
         m_tiles.ClearSelectedTiles();
+        m_units.ClearSelectedUnits();
         //If the selected piece is in attack mode
         if (selectedUnit && e_playerState == PlayerState.UnitAttack)
         {
@@ -67,6 +70,10 @@ public class PlayerController : MonoBehaviour {
             {
                 selectedUnit.AttackUnit(chosen);
                 e_playerState = PlayerState.Default;
+            }
+            else
+            {
+                CancelAction();
             }
         }
         else
@@ -142,15 +149,8 @@ public class PlayerController : MonoBehaviour {
     public void DisplayMove()
     {
         e_playerState = PlayerState.UnitMove;
-        m_tiles.ClearSelectedTiles();
         possibleTiles.Clear();
-        if (selectedUnit.PossibleMove > 0)
-            possibleTiles = m_tiles.GetPossibleTiles(selectedUnit.CurrentTile, selectedUnit.PossibleMove, false);
-
-        foreach (Tile t in possibleTiles)
-        {
-            t.Adjacent = true;
-        }
+        possibleTiles = selectedUnit.GetComponent<UnitMove>().DisplayMove();
     }
 
     //Display the current possible tiles and units the chosen unit can attack
@@ -182,13 +182,16 @@ public class PlayerController : MonoBehaviour {
     //Display the current possible tiles and units the chosen unit can hit with a power
     public void DisplayPower(int pIndex)
     {
-        e_playerState = PlayerState.UnitPower;
-
-        //Check for 
-        if(pIndex < selectedUnit.Powers.Length)
+        if (selectedUnit)
         {
-            selectedPower = selectedUnit.Powers[pIndex];
-            m_power.CurrentPower = selectedPower;
+            e_playerState = PlayerState.UnitPower;
+
+            //Check for 
+            if (pIndex < selectedUnit.Powers.Length)
+            {
+                selectedPower = selectedUnit.Powers[pIndex];
+                m_power.CurrentPower = selectedPower;
+            }
         }
             
     }
@@ -217,7 +220,7 @@ public class PlayerController : MonoBehaviour {
     private void ResolveAttack(Tile chosen)
     {
         //Get if there is an attackable unit on the tile
-        if (chosen.Occupied)
+        if (possibleTiles.Contains(chosen) && chosen.Occupied)
         {
             Unit u = chosen.OccupiedBy;
             if (u.Team != player.Team)
@@ -229,6 +232,10 @@ public class PlayerController : MonoBehaviour {
             {
                 CancelAction();
             }
+        }
+        else
+        {
+            CancelAction();
         }
     }
 

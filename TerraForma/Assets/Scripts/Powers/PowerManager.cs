@@ -80,26 +80,20 @@ public class PowerManager : MonoBehaviour {
 
     private List<Tile> ProcessLinePower(Tile chosen, Tile origin, List<Tile> range)
     {
-        Vector3 line = GetVectorBetweenTiles(chosen, origin);
+        Vector3 line = m_tiles.GetVectorBetweenTiles(chosen, origin);
         List<Tile> tilesInPower = m_tiles.GetTilesAlongVector(line, range, origin, 0.01f);
         return tilesInPower;
     }
 
     private List<Tile> ProcessConePower(Tile chosen, Tile origin, List<Tile> range)
     {
-        Vector3 line = GetVectorBetweenTiles(chosen, origin);
-        List<Tile> tilesInPower = m_tiles.GetTilesAlongCone(line, range, origin, 3.0f, 0.01f);
+        Vector3 line = m_tiles.GetVectorBetweenTiles(chosen, origin);
+        List<Tile> tilesInPower = m_tiles.GetTilesAlongCone(line, range, origin, 5.0f, 0.01f);
         return tilesInPower;
     }
 
     private List<Tile> ProcessBiomePower(Tile chosen, Tile origin, List<Tile> range)
     {
         return null;
-    }
-
-    private Vector3 GetVectorBetweenTiles(Tile t1, Tile t2)
-    {
-        Vector3 v = t1.gameObject.transform.position - t2.gameObject.transform.position;
-        return v;
     }
 }

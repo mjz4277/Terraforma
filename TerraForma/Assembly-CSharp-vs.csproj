@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Biome.cs" />
+     <Compile Include="Assets\Scripts\BiomeTable.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\HUDManager.cs" />
      <Compile Include="Assets\Scripts\Interfaces.cs" />
@@ -63,6 +64,7 @@
      <Compile Include="Assets\Scripts\Powers\Electric\p_Electric_Thunderbolt.cs" />
      <Compile Include="Assets\Scripts\Powers\Fire\p_Fire_Ignite.cs" />
      <Compile Include="Assets\Scripts\Powers\Ice\p_Ice_ChillingBolt.cs" />
+     <Compile Include="Assets\Scripts\Powers\Light\p_Light_BlindingLight.cs" />
      <Compile Include="Assets\Scripts\Powers\Light\p_Light_Engage.cs" />
      <Compile Include="Assets\Scripts\Powers\Light\p_Light_Purify.cs" />
      <Compile Include="Assets\Scripts\Powers\Nature\p_Nature_Growth.cs" />
@@ -71,6 +73,7 @@
      <Compile Include="Assets\Scripts\Powers\Power_TileTargeted.cs" />
      <Compile Include="Assets\Scripts\Powers\Power_UnitTargeted.cs" />
      <Compile Include="Assets\Scripts\Powers\Water\p_Water_Riptide.cs" />
+     <Compile Include="Assets\Scripts\ResourceManager.cs" />
      <Compile Include="Assets\Scripts\StatusEffects\StatusEffect.cs" />
      <Compile Include="Assets\Scripts\StatusEffects\se_DOT.cs" />
      <Compile Include="Assets\Scripts\StatusEffects\se_Disarm.cs" />
@@ -100,6 +103,7 @@
      <Compile Include="Assets\Scripts\Units\Nature\Nature_Axeman_Unit.cs" />
      <Compile Include="Assets\Scripts\Units\SEManager.cs" />
      <Compile Include="Assets\Scripts\Units\Unit.cs" />
+     <Compile Include="Assets\Scripts\Units\UnitAttack.cs" />
      <Compile Include="Assets\Scripts\Units\UnitMove.cs" />
      <Compile Include="Assets\Scripts\Units\UnitStats.cs" />
      <Compile Include="Assets\Scripts\Units\Water\Water_Spearman_Unit.cs" />
@@ -129,6 +133,7 @@
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\FisheyeShader.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch\Apply.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\frag_ao.cginc" />
+     <None Include="Assets\XML\biomes.xml" />
      <None Include="Assets\Standard Assets\Effects\ToonShading\Shaders\ToonBasicOutline.shader" />
      <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAlpha.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\DepthOfField34.shader" />
