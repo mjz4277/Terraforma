@@ -66,9 +66,9 @@ public class PlayerController : MonoBehaviour {
         //If the selected piece is in attack mode
         if (selectedUnit && e_playerState == PlayerState.UnitAttack)
         {
-            if (possibleUnits.Contains(chosen))
+            if (selectedUnit.GetComponent<UnitAttack>().Attack(chosen))
             {
-                selectedUnit.AttackUnit(chosen);
+                selectedUnit.EndTurn();
                 e_playerState = PlayerState.Default;
             }
             else
@@ -87,7 +87,7 @@ public class PlayerController : MonoBehaviour {
             m_hud.SetUnitInfo(selectedUnit);
             if (selectedUnit.Team == player.Team)
             {
-                if (selectedUnit.PossibleMove > 0)
+                if (selectedUnit.GetComponent<UnitMove>().CanMove())
                     DisplayMove();
                 else
                     DisplayAttack();
@@ -134,7 +134,7 @@ public class PlayerController : MonoBehaviour {
                 if (e_playerState == PlayerState.UnitAttack)
                 {
                     //Don't display movement if unit cannot move
-                    if(selectedUnit.PossibleMove > 0)
+                    if(selectedUnit.GetComponent<UnitMove>().CanMove())
                         DisplayMove();
                 }
                 else
@@ -149,8 +149,7 @@ public class PlayerController : MonoBehaviour {
     public void DisplayMove()
     {
         e_playerState = PlayerState.UnitMove;
-        possibleTiles.Clear();
-        possibleTiles = selectedUnit.GetComponent<UnitMove>().DisplayMove();
+        selectedUnit.GetComponent<UnitMove>().DisplayMove();
     }
 
     //Display the current possible tiles and units the chosen unit can attack
@@ -160,22 +159,7 @@ public class PlayerController : MonoBehaviour {
         {
             e_playerState = PlayerState.UnitAttack;
             m_tiles.ClearSelectedTiles();
-            possibleTiles.Clear();
-            possibleUnits.Clear();
-            possibleTiles = m_tiles.GetPossibleTiles(selectedUnit.CurrentTile, selectedUnit.Range, true);
-            foreach (Tile t in possibleTiles)
-            {
-                t.Adjacent = true;
-                if (t.Occupied)
-                {
-                    Unit enemy = t.OccupiedBy;
-                    if (enemy.Team != selectedUnit.Team)
-                    {
-                        possibleUnits.Add(enemy);
-                        t.Selected = true;
-                    }
-                }
-            }
+            selectedUnit.GetComponent<UnitAttack>().DisplayAttack();
         }
     }
 
@@ -220,18 +204,10 @@ public class PlayerController : MonoBehaviour {
     private void ResolveAttack(Tile chosen)
     {
         //Get if there is an attackable unit on the tile
-        if (possibleTiles.Contains(chosen) && chosen.Occupied)
+        if (selectedUnit.GetComponent<UnitAttack>().Attack(chosen))
         {
-            Unit u = chosen.OccupiedBy;
-            if (u.Team != player.Team)
-            {
-                selectedUnit.AttackUnit(u);
-                e_playerState = PlayerState.Default;
-            }
-            else
-            {
-                CancelAction();
-            }
+            selectedUnit.EndTurn();
+            e_playerState = PlayerState.Default;
         }
         else
         {
@@ -246,21 +222,13 @@ public class PlayerController : MonoBehaviour {
         {
             bool validMove = false;
 
-            //Check if tile selected is within the range of possible moves
-            foreach (Tile t in possibleTiles)
-            {
-                //Don't count clicking the current tile as a move action
-                if (chosen == selectedUnit.CurrentTile) break;
+            UnitMove u_move = selectedUnit.gameObject.GetComponent<UnitMove>();
 
-                if (chosen == t)
-                {
-                    validMove = true;
-                    break;
-                }
-            }
+            if (chosen != selectedUnit.CurrentTile) validMove = u_move.TileInMove(chosen);
+
             if (validMove)
             {
-                selectedUnit.MoveTo(chosen);
+                u_move.MoveTo(chosen);
                 DisplayMove();
             }
             else

@@ -223,18 +223,19 @@ public abstract class Unit : MonoBehaviour
         powers[index].UsePower(tiles, units);
     }
 
-    public void MoveTo(Tile t)
-    {
-        unitMove.MoveTo(t);
-    }
-
     public virtual void TakeDamage(float amount)
     {
         _health -= amount;
         if (_health <= 0)
         {
-            _isDead = true;
+            Kill();
         }
+    }
+
+    public void Kill()
+    {
+        _isDead = true;
+        //Destroy(this.gameObject);
     }
 
     public void CalculateNextTurnStats()

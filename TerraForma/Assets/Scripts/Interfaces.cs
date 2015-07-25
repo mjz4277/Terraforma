@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public interface IMovable
 {
-    List<Tile> DisplayMove();
-    void MoveTo(Tile t);
+    void DisplayMove();
+    bool MoveTo(Tile t);
 }
 
 public interface ICombat
 {
-    List<Tile> DisplayAttack();
+    void DisplayAttack();
 
 
 }

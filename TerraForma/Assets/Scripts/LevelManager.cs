@@ -17,8 +17,8 @@ public class LevelManager : MonoBehaviour {
 
     private Transform boardHolder;
     //Board might be ~30x30
-    int map_width = 15;
-    int map_height = 15;
+    int map_width = 9;
+    int map_height = 7;
     int minor_units = 0;
     GameObject[,] map;
     List<Tile> tiles = new List<Tile>();
@@ -95,6 +95,11 @@ public class LevelManager : MonoBehaviour {
 
         //Give the tiles references to their neighbors
         LinkTiles();
+    }
+
+    private void SetMapData()
+    {
+
     }
 
     public void BuildRegion(int regionIndex)

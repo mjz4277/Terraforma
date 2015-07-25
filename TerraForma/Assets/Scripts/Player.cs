@@ -26,6 +26,8 @@ public class Player : MonoBehaviour {
     float _maxMana;
     float _mana;
     int _level;
+    int _ap_total;
+    int _ap_current;
 
     int _team;
 
@@ -55,6 +57,18 @@ public class Player : MonoBehaviour {
     {
         get { return _level; }
         set { _level = value; }
+    }
+
+    public int TotalActionPoints
+    {
+        get { return _ap_total; }
+        set { if (value < 0) _ap_total = 0; else _ap_total = value; }
+    }
+
+    public int CurrentActionPoints
+    {
+        get { return _ap_current; }
+        set { if (value < 0) _ap_current = 0; else _ap_current = value; }
     }
 
     public int Team
@@ -122,6 +136,7 @@ public class Player : MonoBehaviour {
         input.IsTurn = true;
         controller.StartTurn();
         RegenMana();
+        ResetAP();
     }
 
     public void EndTurn()
@@ -134,5 +149,10 @@ public class Player : MonoBehaviour {
     {
         _mana += _manaRegen;
         if (_mana > _maxMana) _mana = _maxMana;
+    }
+
+    public void ResetAP()
+    {
+        _ap_current = _ap_total;
     }
 }

@@ -97,6 +97,7 @@
      <Compile Include="Assets\Scripts\Units\Earth\Earth_Shieldbearer_Unit.cs" />
      <Compile Include="Assets\Scripts\Units\Electric\Electric_Fencer_Unit.cs" />
      <Compile Include="Assets\Scripts\Units\Fire\Fire_Lancer_Unit.cs" />
+     <Compile Include="Assets\Scripts\Units\GameUnit.cs" />
      <Compile Include="Assets\Scripts\Units\Ice\Ice_Crossbowman_Unit.cs" />
      <Compile Include="Assets\Scripts\Units\Light\Light_Knight_Unit.cs" />
      <Compile Include="Assets\Scripts\Units\Mech\Mech_Warrior_Unit.cs" />
@@ -105,6 +106,7 @@
      <Compile Include="Assets\Scripts\Units\Unit.cs" />
      <Compile Include="Assets\Scripts\Units\UnitAttack.cs" />
      <Compile Include="Assets\Scripts\Units\UnitMove.cs" />
+     <Compile Include="Assets\Scripts\Units\UnitPower.cs" />
      <Compile Include="Assets\Scripts\Units\UnitStats.cs" />
      <Compile Include="Assets\Scripts\Units\Water\Water_Spearman_Unit.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
