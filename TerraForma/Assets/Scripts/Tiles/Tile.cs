@@ -108,6 +108,9 @@ public class Tile : MonoBehaviour {
             case "Water":
                 tbd = new tbd_Water();
                 break;
+            case "DeepWater":
+                tbd = new tbd_DeepWater();
+                break;
             case "Default":
                 tbd = new tbd_Default();
                 break;

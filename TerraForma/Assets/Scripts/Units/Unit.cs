@@ -218,11 +218,6 @@ public abstract class Unit : MonoBehaviour
         EndTurn();
     }
 
-    public void UsePower(int index, List<Tile> tiles, List<Unit> units)
-    {
-        powers[index].UsePower(tiles, units);
-    }
-
     public virtual void TakeDamage(float amount)
     {
         _health -= amount;

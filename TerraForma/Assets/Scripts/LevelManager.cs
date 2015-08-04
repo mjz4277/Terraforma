@@ -11,18 +11,20 @@ public class LevelManager : MonoBehaviour {
     private TileManager m_tiles;
     private UnitManager m_units;
 
-    private XmlSerializer xml_serializer = new XmlSerializer(typeof(BiomeTable));
+    private XmlSerializer xml_serializer_biome = new XmlSerializer(typeof(BiomeTable));
+    private XmlSerializer xml_serializer_map = new XmlSerializer(typeof(BiomeMap));
     private StreamReader loadStream;
     private BiomeTable biomeTable = new BiomeTable();
+    private BiomeMap biomeMap = new BiomeMap();
 
     private Transform boardHolder;
     //Board might be ~30x30
-    int map_width = 9;
-    int map_height = 7;
+    int map_width = 21;
+    int map_height = 21;
     int minor_units = 0;
-    GameObject[,] map;
     List<Tile> tiles = new List<Tile>();
     List<Unit> units = new List<Unit>();
+    public List<Biome> biomes = new List<Biome>();
     public GameObject[] tile_types;
     float tile_size = 1.5f;
     float tile_spacing = 0.05f;
@@ -40,9 +42,12 @@ public class LevelManager : MonoBehaviour {
         m_resources = GetComponent<ResourceManager>();
         m_tiles = GetComponent<TileManager>();
         m_units = GetComponent<UnitManager>();
+        boardHolder = new GameObject("Board").transform;
         LoadBiomeTable();
-        //BuildMap();
-        BuildRegion(0);
+        LoadBiomeMap();
+        BuildMap();
+        //BuildContinent(2, 2);
+        //BuildRegion(2, Vector3.zero);
         SetUpUnits();
         m_tiles.Init();
         m_units.Init();
@@ -58,10 +63,45 @@ public class LevelManager : MonoBehaviour {
         try
         {
             loadStream = new StreamReader(@"Assets/XML/biomes.xml");
-            biomeTable = (BiomeTable)xml_serializer.Deserialize(loadStream);
+            biomeTable = (BiomeTable)xml_serializer_biome.Deserialize(loadStream);
             loadStream.Close();
         }
         catch(IOException e)
+        {
+            Debug.Log("Error: " + e.Message);
+        }
+
+        tile_height = 2.0f;
+        tile_width = (Mathf.Sqrt(3) / 2) * tile_height;
+    }
+
+    private void LoadBiomeMap()
+    {
+        try
+        {
+            loadStream = new StreamReader(@"Assets/XML/biomeMap.xml");
+            biomeMap = (BiomeMap)xml_serializer_map.Deserialize(loadStream);
+            loadStream.Close();
+
+            //Set up the proper number of biomes
+            for(int i = 0; i < biomeMap.Map.BiomeCount; i++)
+            {
+                biomes.Add(new Biome());
+            }
+            biomes[0].BiomeType = "Mountains";
+            biomes[1].BiomeType = "Ocean";
+            biomes[2].BiomeType = "Woods";
+            biomes[3].BiomeType = "Islands";
+            biomes[4].BiomeType = "Forest";
+            biomes[5].BiomeType = "Mountains";
+            biomes[6].BiomeType = "Forest";
+            biomes[7].BiomeType = "Islands";
+            biomes[8].BiomeType = "Woods";
+            biomes[9].BiomeType = "Ocean";
+            biomes[10].BiomeType = "Mountains";
+
+        }
+        catch (IOException e)
         {
             Debug.Log("Error: " + e.Message);
         }
@@ -69,11 +109,8 @@ public class LevelManager : MonoBehaviour {
 
     public void BuildMap()
     {
-        tile_height = 2.0f;
-        tile_width = (Mathf.Sqrt(3) / 2) * tile_height;
-
-        map = new GameObject[map_width, map_height];
-        boardHolder = new GameObject("Board").transform;
+        map_width = biomeMap.Map.Width;
+        map_height = biomeMap.Map.Height;
 
         float offset = (tile_size / 2) * Mathf.Sqrt(2);
         offset = (tile_width / 2) + (tile_spacing / 2);
@@ -87,14 +124,24 @@ public class LevelManager : MonoBehaviour {
                 GameObject tile = Instantiate(tile_types[0], pos, Quaternion.identity) as GameObject;
                 tile.name = "Tile";
                 tile.transform.SetParent(boardHolder);
-                map[i, j] = tile;
                 Tile t = tile.GetComponent<Tile>();
                 tiles.Add(t);
+
+                //Link proper tiles to a biome
+                int biomeNum = biomeMap.Map.Rows.Row[i].Tile[j].Biome;
+                if (biomeNum != 0)
+                {
+                    biomes[biomeNum - 1].AddTile(t);
+                }
             }
         }
 
         //Give the tiles references to their neighbors
         LinkTiles();
+        foreach(Biome b in biomes)
+        {
+            b.GenerateBiome();
+        }
     }
 
     private void SetMapData()
@@ -102,10 +149,25 @@ public class LevelManager : MonoBehaviour {
 
     }
 
-    public void BuildRegion(int regionIndex)
+    public void BuildContinent(int width, int height)
+    {
+        Vector3 regionOrigin = Vector3.zero;
+        int randBiome = 0;
+        for(int i = 0; i < width; i++)
+        {
+            //int randBiome = Mathf.FloorToInt(Random.Range(0, biomeTable.Biomes.Count));
+            BuildRegion(randBiome, regionOrigin);
+            regionOrigin.x += (/*biomeTable.Biomes.Biomes[randBiome].Size / 2 + 1*/3.75f) * (tile_height + tile_spacing);
+            regionOrigin.z += ((Mathf.Sqrt(3) / 2) * biomeTable.Biomes.Biomes[randBiome].Size) * (tile_width + tile_spacing);
+            randBiome++;
+        }
+    }
+
+    public void BuildRegion(int regionIndex, Vector3 origin)
     {
         int regionSize = biomeTable.Biomes.Biomes[regionIndex].Size;
-        boardHolder = new GameObject("Board").transform;
+
+        Transform biomeHolder = new GameObject("Biome_" + biomeTable.Biomes.Biomes[regionIndex].Name).transform;
 
         tile_height = 2.0f;
         tile_width = (Mathf.Sqrt(3) / 2) * tile_height;
@@ -120,9 +182,10 @@ public class LevelManager : MonoBehaviour {
             for(int j = 0; j < rowSize; j++)
             {
                 Vector3 pos = new Vector3(i * ((tile_height * 0.75f) + tile_spacing), 0, j * (tile_width + tile_spacing) + totalOff);
+                pos += origin;
                 GameObject tile = Instantiate(tile_types[0], pos, Quaternion.identity) as GameObject;
-                tile.name = "Tile";
-                tile.transform.SetParent(boardHolder);
+                tile.transform.SetParent(biomeHolder);
+                biomeHolder.SetParent(boardHolder);
                 //map[i, j] = tile;
                 Tile t = tile.GetComponent<Tile>();
                 tiles.Add(t);
@@ -179,6 +242,7 @@ public class LevelManager : MonoBehaviour {
             {
                 Tile t = tiles[tileIndex];
                 t.ChangeTileBaseData(txml.Base);
+                t.gameObject.name = "Tile_" + txml.Base;
                 tileIndex++;
                 if (tileIndex >= tiles.Count) return;
             }

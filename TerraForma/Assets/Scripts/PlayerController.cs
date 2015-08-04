@@ -26,9 +26,6 @@ public class PlayerController : MonoBehaviour {
     private Unit selectedUnit;
     private Power selectedPower;
 
-    private List<Tile> possibleTiles;
-    private List<Unit> possibleUnits;
-
     private List<Tile> tilesInPower;
     private List<Unit> unitsInPower;
 
@@ -44,9 +41,6 @@ public class PlayerController : MonoBehaviour {
         m_tiles = GameObject.FindGameObjectWithTag("GameController").GetComponent<TileManager>();
         m_units = GameObject.FindGameObjectWithTag("GameController").GetComponent<UnitManager>();
         m_hud = GameObject.FindGameObjectWithTag("GameController").GetComponent<HUDManager>();
-
-        possibleTiles = new List<Tile>();
-        possibleUnits = new List<Unit>();
 
         tilesInPower = new List<Tile>();
         unitsInPower = new List<Unit>();
